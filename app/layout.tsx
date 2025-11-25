@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { SidebarProvider } from '@/contexts/SidebarContext'
 
 export const metadata: Metadata = {
   title: 'لوحة تحكم المطعم - نظام إدارة متكامل',
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>{children}</body>
+      <body>
+        <SidebarProvider>
+          {children}
+        </SidebarProvider>
+      </body>
     </html>
   )
 }

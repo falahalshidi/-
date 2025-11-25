@@ -15,6 +15,12 @@ const nextConfig = {
     domains: [],
     formats: ['image/avif', 'image/webp'],
   },
+  // تسريع التحميل
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'recharts'],
+  },
+  // تحسين الإنتاج
+  productionBrowserSourceMaps: false,
 }
 
 module.exports = nextConfig

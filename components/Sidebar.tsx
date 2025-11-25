@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { memo } from 'react'
+import { useSidebar } from '@/contexts/SidebarContext'
 import {
   LayoutDashboard,
   Store,
@@ -14,7 +15,9 @@ import {
   Users,
   Settings,
   FileText,
-  TrendingUp
+  TrendingUp,
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react'
 
 const navigation = [
@@ -31,9 +34,37 @@ const navigation = [
 
 function Sidebar() {
   const pathname = usePathname()
+  const { isOpen, toggleSidebar, isMobile } = useSidebar()
 
   return (
-    <div className="h-screen w-64 bg-white border-l border-gray-200 fixed right-0 top-0 flex flex-col">
+    <>
+      {/* Toggle Button */}
+      <button
+        onClick={toggleSidebar}
+        className="fixed top-4 z-50 w-10 h-10 bg-primary-500 hover:bg-primary-600 text-white rounded-lg shadow-lg flex items-center justify-center transition-all duration-300"
+        style={{ right: isOpen ? '260px' : '16px' }}
+      >
+        {isOpen ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div 
+        className={`h-screen bg-white border-l border-gray-200 fixed right-0 top-0 flex flex-col z-40 transition-all duration-300 overflow-hidden ${
+          isOpen ? 'w-64' : 'w-0'
+        }`}
+        style={{
+          willChange: 'width',
+          transform: 'translateZ(0)',
+        }}
+      >
       {/* Logo */}
       <div className="h-16 flex items-center justify-center border-b border-gray-200">
         <div className="flex items-center gap-2">
@@ -58,6 +89,7 @@ function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
                   ${isActive 
@@ -88,6 +120,7 @@ function Sidebar() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 

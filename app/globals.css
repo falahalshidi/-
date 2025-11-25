@@ -12,12 +12,25 @@
 
 html {
   direction: rtl;
+  /* تحسين الأداء */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   font-family: 'Cairo', system-ui, sans-serif;
   background-color: #ffffff;
   color: #1f2937;
+  /* تسريع الانتقالات */
+  transition: none;
+}
+
+/* تسريع الرسم */
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
 }
 
 @layer components {
@@ -83,6 +96,29 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* Sidebar Animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 /* Chart Tooltips */
