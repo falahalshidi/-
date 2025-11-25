@@ -40,6 +40,128 @@ import {
   ResponsiveContainer
 } from 'recharts'
 
+// تأكد من تحميل jspdf فقط في المتصفح
+const exportToPDF = async () => {
+  const { jsPDF } = await import('jspdf')
+  
+  const doc = new jsPDF('p', 'mm', 'a4')
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const pageHeight = doc.internal.pageSize.getHeight()
+  
+  // إعداد الخط العربي (يمكن تحسينه بإضافة خط عربي مخصص)
+  doc.setLanguage('ar')
+  
+  // الخلفية الملونة للعنوان
+  doc.setFillColor(59, 130, 246) // primary blue
+  doc.rect(0, 0, pageWidth, 50, 'F')
+  
+  // العنوان
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(28)
+  doc.text('تقرير الإحصائيات الشامل', pageWidth / 2, 25, { align: 'center' })
+  
+  doc.setFontSize(14)
+  doc.text('نظام إدارة المطاعم', pageWidth / 2, 35, { align: 'center' })
+  
+  // التاريخ
+  doc.setFontSize(10)
+  const today = new Date().toLocaleDateString('ar-SA')
+  doc.text(`تاريخ التقرير: ${today}`, pageWidth / 2, 43, { align: 'center' })
+  
+  // المحتوى
+  doc.setTextColor(0, 0, 0)
+  let yPos = 60
+  
+  // قسم الإحصائيات الرئيسية
+  doc.setFillColor(240, 240, 240)
+  doc.rect(15, yPos, pageWidth - 30, 10, 'F')
+  doc.setFontSize(16)
+  doc.setTextColor(59, 130, 246)
+  doc.text('الإحصائيات الرئيسية', 20, yPos + 7)
+  
+  yPos += 20
+  doc.setFontSize(12)
+  doc.setTextColor(0, 0, 0)
+  
+  // البيانات
+  const stats = [
+    { label: 'إجمالي الزوار', value: '24.5K', change: '+12.5%' },
+    { label: 'مشاهدات الصفحة', value: '68.2K', change: '+8.3%' },
+    { label: 'مكالمات الاتصال', value: '1.8K', change: '-2.1%' },
+    { label: 'المشاركات', value: '892', change: '+18.7%' }
+  ]
+  
+  stats.forEach((stat, index) => {
+    doc.setFillColor(249, 250, 251)
+    doc.rect(15, yPos + (index * 15), pageWidth - 30, 12, 'F')
+    doc.text(`${stat.label}: ${stat.value}`, 20, yPos + (index * 15) + 8)
+    doc.setTextColor(34, 197, 94)
+    doc.text(stat.change, pageWidth - 40, yPos + (index * 15) + 8)
+    doc.setTextColor(0, 0, 0)
+  })
+  
+  yPos += 70
+  
+  // قسم التوزيع الجغرافي
+  doc.setFillColor(240, 240, 240)
+  doc.rect(15, yPos, pageWidth - 30, 10, 'F')
+  doc.setFontSize(16)
+  doc.setTextColor(59, 130, 246)
+  doc.text('التوزيع الجغرافي', 20, yPos + 7)
+  
+  yPos += 20
+  doc.setFontSize(12)
+  doc.setTextColor(0, 0, 0)
+  
+  const cities = [
+    { name: 'مسقط', value: '4,500', percentage: '45%' },
+    { name: 'صلالة', value: '3,000', percentage: '30%' },
+    { name: 'صحار', value: '1,500', percentage: '15%' },
+    { name: 'نزوى', value: '1,000', percentage: '10%' }
+  ]
+  
+  cities.forEach((city, index) => {
+    doc.setFillColor(249, 250, 251)
+    doc.rect(15, yPos + (index * 12), pageWidth - 30, 10, 'F')
+    doc.text(`${city.name}: ${city.value} زائر (${city.percentage})`, 20, yPos + (index * 12) + 7)
+  })
+  
+  yPos += 60
+  
+  // قسم الرؤى الذكية
+  doc.setFillColor(240, 240, 240)
+  doc.rect(15, yPos, pageWidth - 30, 10, 'F')
+  doc.setFontSize(16)
+  doc.setTextColor(59, 130, 246)
+  doc.text('الرؤى والتوصيات', 20, yPos + 7)
+  
+  yPos += 20
+  doc.setFontSize(11)
+  doc.setTextColor(0, 0, 0)
+  
+  const insights = [
+    '✓ نمو ممتاز: الزيارات زادت بنسبة 12.5% هذا الأسبوع',
+    '✓ ذروة المساء: أعلى طلبات بين 6-9 مساءً',
+    '✓ توسع محتمل: 45% من الزوار من مسقط',
+    '✓ رضا العملاء: متوسط التقييم 4.7'
+  ]
+  
+  insights.forEach((insight, index) => {
+    doc.text(insight, 20, yPos + (index * 10))
+  })
+  
+  // الذيل
+  yPos = pageHeight - 20
+  doc.setFillColor(59, 130, 246)
+  doc.rect(0, yPos, pageWidth, 20, 'F')
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(10)
+  doc.text('نظام إدارة المطاعم - جميع الحقوق محفوظة', pageWidth / 2, yPos + 12, { align: 'center' })
+  
+  // حفظ الملف
+  doc.save(`تقرير-الإحصائيات-${today}.pdf`)
+}
+
 // Sample Data
 const visitorTrend = [
   { date: '1 نوفمبر', visitors: 1200, pageViews: 3400, calls: 89 },
@@ -112,7 +234,10 @@ export default function AnalyticsPage() {
               <Filter className="w-4 h-4 ml-2" />
               تصفية
             </button>
-            <button className="btn-primary">
+            <button 
+              onClick={exportToPDF}
+              className="btn-primary"
+            >
               <Download className="w-4 h-4 ml-2" />
               تصدير التقرير
             </button>

@@ -89,6 +89,20 @@ const branches: Branch[] = [
 export default function BranchesPage() {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(branches[0])
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid')
+  const [showAddBranchModal, setShowAddBranchModal] = useState(false)
+  const [newBranch, setNewBranch] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    manager: '',
+    hours: '9:00 ص - 12:00 ص'
+  })
+
+  const handleAddBranch = () => {
+    console.log('إضافة فرع جديد:', newBranch)
+    setShowAddBranchModal(false)
+    // هنا يمكن إضافة الفرع للقائمة
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -145,7 +159,10 @@ export default function BranchesPage() {
                 خريطة
               </button>
             </div>
-            <button className="btn-primary">
+            <button 
+              onClick={() => setShowAddBranchModal(true)}
+              className="btn-primary"
+            >
               + إضافة فرع جديد
             </button>
           </div>
@@ -388,6 +405,104 @@ export default function BranchesPage() {
           </div>
         )}
       </div>
+
+      {/* Add Branch Modal */}
+      {showAddBranchModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">إضافة فرع جديد</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  اسم الفرع *
+                </label>
+                <input
+                  type="text"
+                  value={newBranch.name}
+                  onChange={(e) => setNewBranch({ ...newBranch, name: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="مثال: فرع مسقط - القرم"
+                />
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  العنوان الكامل *
+                </label>
+                <input
+                  type="text"
+                  value={newBranch.address}
+                  onChange={(e) => setNewBranch({ ...newBranch, address: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="مثال: شارع السلطان قابوس، حي القرم، مسقط"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  رقم الهاتف *
+                </label>
+                <input
+                  type="tel"
+                  value={newBranch.phone}
+                  onChange={(e) => setNewBranch({ ...newBranch, phone: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="24123456"
+                />
+              </div>
+
+              {/* Manager */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  اسم المدير *
+                </label>
+                <input
+                  type="text"
+                  value={newBranch.manager}
+                  onChange={(e) => setNewBranch({ ...newBranch, manager: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="مثال: أحمد محمد"
+                />
+              </div>
+
+              {/* Hours */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ساعات العمل *
+                </label>
+                <input
+                  type="text"
+                  value={newBranch.hours}
+                  onChange={(e) => setNewBranch({ ...newBranch, hours: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="9:00 ص - 12:00 ص"
+                />
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowAddBranchModal(false)}
+                className="btn-secondary"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleAddBranch}
+                className="btn-primary"
+              >
+                <MapPin className="w-4 h-4 ml-2" />
+                إضافة الفرع
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

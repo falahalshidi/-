@@ -40,7 +40,7 @@ interface Campaign {
   items: string[]
 }
 
-const campaigns: Campaign[] = [
+const initialCampaigns: Campaign[] = [
   {
     id: 1,
     name: 'خصم 20% على الوجبات الرئيسية',
@@ -160,6 +160,35 @@ const getStatusText = (status: string) => {
 
 export default function CampaignsPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
+  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns)
+
+  const handleToggleStatus = (campaignId: number) => {
+    setCampaigns(campaigns.map(c => {
+      if (c.id === campaignId) {
+        let newStatus: Campaign['status'] = c.status
+        if (c.status === 'active') newStatus = 'paused'
+        else if (c.status === 'paused') newStatus = 'active'
+        else if (c.status === 'scheduled') newStatus = 'active'
+        return { ...c, status: newStatus }
+      }
+      return c
+    }))
+  }
+
+  const handleDuplicate = (campaign: Campaign) => {
+    const newCampaign = {
+      ...campaign,
+      id: Math.max(...campaigns.map(c => c.id)) + 1,
+      name: campaign.name + ' (نسخة)',
+      status: 'scheduled' as const
+    }
+    setCampaigns([...campaigns, newCampaign])
+  }
+
+  const handleEdit = (campaignId: number) => {
+    console.log('تعديل حملة:', campaignId)
+    // هنا يمكن فتح مودال التعديل
+  }
 
   const activeCampaigns = campaigns.filter(c => c.status === 'active')
   const totalRevenue = campaigns.reduce((sum, c) => sum + c.revenue, 0)
@@ -338,7 +367,10 @@ export default function CampaignsPage() {
               <div className="flex items-center gap-2">
                 {campaign.status === 'active' && (
                   <>
-                    <button className="flex-1 btn-ghost text-xs">
+                    <button 
+                      onClick={() => handleToggleStatus(campaign.id)}
+                      className="flex-1 btn-ghost text-xs"
+                    >
                       <Pause className="w-3 h-3 ml-1" />
                       إيقاف
                     </button>
@@ -349,22 +381,34 @@ export default function CampaignsPage() {
                   </>
                 )}
                 {campaign.status === 'scheduled' && (
-                  <button className="flex-1 btn-ghost text-xs">
+                  <button 
+                    onClick={() => handleToggleStatus(campaign.id)}
+                    className="flex-1 btn-ghost text-xs"
+                  >
                     <Play className="w-3 h-3 ml-1" />
                     تفعيل الآن
                   </button>
                 )}
                 {campaign.status === 'paused' && (
-                  <button className="flex-1 btn-ghost text-xs">
+                  <button 
+                    onClick={() => handleToggleStatus(campaign.id)}
+                    className="flex-1 btn-ghost text-xs"
+                  >
                     <Play className="w-3 h-3 ml-1" />
                     استئناف
                   </button>
                 )}
-                <button className="flex-1 btn-ghost text-xs">
+                <button 
+                  onClick={() => handleEdit(campaign.id)}
+                  className="flex-1 btn-ghost text-xs"
+                >
                   <Edit className="w-3 h-3 ml-1" />
                   تعديل
                 </button>
-                <button className="flex-1 btn-ghost text-xs">
+                <button 
+                  onClick={() => handleDuplicate(campaign)}
+                  className="flex-1 btn-ghost text-xs"
+                >
                   <Copy className="w-3 h-3 ml-1" />
                   نسخ
                 </button>
@@ -387,11 +431,11 @@ export default function CampaignsPage() {
             </div>
           </div>
 
-          {/* Mini Calendar */}
-          <div className="grid grid-cols-7 gap-2">
+          {/* Compact Calendar */}
+          <div className="grid grid-cols-7 gap-1">
             {['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'].map((day) => (
-              <div key={day} className="text-center text-sm font-semibold text-gray-600 py-2">
-                {day}
+              <div key={day} className="text-center text-xs font-semibold text-gray-600 py-1">
+                {day.substring(0, 3)}
               </div>
             ))}
             {Array.from({ length: 30 }, (_, i) => i + 1).map((day) => {
@@ -404,7 +448,7 @@ export default function CampaignsPage() {
               return (
                 <div
                   key={day}
-                  className={`aspect-square flex items-center justify-center rounded-lg cursor-pointer transition-colors ${
+                  className={`aspect-square flex items-center justify-center rounded text-xs cursor-pointer transition-colors ${
                     hasCampaign 
                       ? 'bg-primary-100 text-primary-700 font-semibold hover:bg-primary-200' 
                       : 'bg-gray-50 text-gray-600 hover:bg-gray-100'

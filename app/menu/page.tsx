@@ -130,12 +130,42 @@ export default function MenuPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [showPriceEditor, setShowPriceEditor] = useState(false)
+  const [showAddDishModal, setShowAddDishModal] = useState(false)
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false)
+  const [newDish, setNewDish] = useState({
+    name: '',
+    category: 'وجبات رئيسية',
+    price: 0,
+    description: '',
+    image: null as File | null,
+    availability: true,
+    branches: [] as string[]
+  })
+  const [newCategory, setNewCategory] = useState('')
 
   const filteredItems = menuItems.filter(item => {
     const matchesCategory = selectedCategory === 'الكل' || item.category === selectedCategory
     const matchesSearch = item.name.includes(searchQuery) || item.description.includes(searchQuery)
     return matchesCategory && matchesSearch
   })
+
+  const handleAddDish = () => {
+    console.log('إضافة طبق جديد:', newDish)
+    setShowAddDishModal(false)
+    // هنا يمكن إضافة الطبق للقائمة
+  }
+
+  const handleAddCategory = () => {
+    console.log('إضافة تصنيف جديد:', newCategory)
+    setShowAddCategoryModal(false)
+    // هنا يمكن إضافة التصنيف للقائمة
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewDish({ ...newDish, image: e.target.files[0] })
+    }
+  }
 
   return (
     <DashboardLayout>
@@ -147,11 +177,17 @@ export default function MenuPage() {
             <p className="text-gray-600">تصميم وتحرير قائمة الطعام بسهولة</p>
           </div>
           <div className="flex gap-3">
-            <button className="btn-secondary">
+            <button 
+              onClick={() => setShowAddCategoryModal(true)}
+              className="btn-secondary"
+            >
               <Copy className="w-4 h-4 ml-2" />
-              نسخ الأسعار
+              إضافة تصنيف
             </button>
-            <button className="btn-primary">
+            <button 
+              onClick={() => setShowAddDishModal(true)}
+              className="btn-primary"
+            >
               <Plus className="w-4 h-4 ml-2" />
               إضافة طبق جديد
             </button>
@@ -431,6 +467,166 @@ export default function MenuPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Dish Modal */}
+      {showAddDishModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">إضافة طبق جديد</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  صورة الطبق
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-500 transition-colors cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="dish-image"
+                  />
+                  <label htmlFor="dish-image" className="cursor-pointer">
+                    <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">
+                      {newDish.image ? newDish.image.name : 'اسحب وأفلت الصورة أو انقر للاختيار'}
+                    </p>
+                  </label>
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  اسم الطبق *
+                </label>
+                <input
+                  type="text"
+                  value={newDish.name}
+                  onChange={(e) => setNewDish({ ...newDish, name: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="مثال: برجر كلاسيك"
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  التصنيف *
+                </label>
+                <select
+                  value={newDish.category}
+                  onChange={(e) => setNewDish({ ...newDish, category: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  {categories.filter(c => c !== 'الكل').map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Price */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  السعر (ر.ع) *
+                </label>
+                <input
+                  type="number"
+                  value={newDish.price}
+                  onChange={(e) => setNewDish({ ...newDish, price: Number(e.target.value) })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="0.00"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  الوصف
+                </label>
+                <textarea
+                  value={newDish.description}
+                  onChange={(e) => setNewDish({ ...newDish, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="وصف تفصيلي للطبق..."
+                />
+              </div>
+
+              {/* Availability */}
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={newDish.availability}
+                  onChange={(e) => setNewDish({ ...newDish, availability: e.target.checked })}
+                  className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                  id="availability"
+                />
+                <label htmlFor="availability" className="text-sm font-semibold text-gray-700">
+                  متوفر حالياً
+                </label>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowAddDishModal(false)}
+                className="btn-secondary"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleAddDish}
+                className="btn-primary"
+              >
+                <Plus className="w-4 h-4 ml-2" />
+                إضافة الطبق
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Category Modal */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">إضافة تصنيف جديد</h2>
+            </div>
+            <div className="p-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                اسم التصنيف *
+              </label>
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="مثال: مشروبات ساخنة"
+              />
+            </div>
+            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowAddCategoryModal(false)}
+                className="btn-secondary"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleAddCategory}
+                className="btn-primary"
+              >
+                <Plus className="w-4 h-4 ml-2" />
+                إضافة التصنيف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

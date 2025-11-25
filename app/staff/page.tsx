@@ -158,6 +158,14 @@ export default function StaffPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRole, setSelectedRole] = useState<string>('all')
   const [showRoleModal, setShowRoleModal] = useState(false)
+  const [showAddStaffModal, setShowAddStaffModal] = useState(false)
+  const [newStaff, setNewStaff] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'manager',
+    branches: [] as string[]
+  })
 
   const filteredStaff = staff.filter(member => {
     const matchesSearch = member.name.includes(searchQuery) || member.email.includes(searchQuery)
@@ -167,6 +175,12 @@ export default function StaffPage() {
 
   const getRoleInfo = (roleId: string) => {
     return roles.find(r => r.id === roleId) || roles[0]
+  }
+
+  const handleAddStaff = () => {
+    console.log('إضافة موظف جديد:', newStaff)
+    setShowAddStaffModal(false)
+    // هنا يمكن إضافة الموظف للقائمة
   }
 
   const getStatusColor = (status: string) => {
@@ -215,7 +229,10 @@ export default function StaffPage() {
               <Shield className="w-4 h-4 ml-2" />
               إدارة الأدوار
             </button>
-            <button className="btn-primary">
+            <button 
+              onClick={() => setShowAddStaffModal(true)}
+              className="btn-primary"
+            >
               <UserPlus className="w-4 h-4 ml-2" />
               إضافة موظف
             </button>
@@ -518,6 +535,148 @@ export default function StaffPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Staff Modal */}
+      {showAddStaffModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">إضافة موظف جديد</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  الاسم الكامل *
+                </label>
+                <input
+                  type="text"
+                  value={newStaff.name}
+                  onChange={(e) => setNewStaff({ ...newStaff, name: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="مثال: أحمد محمد السالم"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  البريد الإلكتروني *
+                </label>
+                <input
+                  type="email"
+                  value={newStaff.email}
+                  onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="example@restaurant.com"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  رقم الهاتف *
+                </label>
+                <input
+                  type="tel"
+                  value={newStaff.phone}
+                  onChange={(e) => setNewStaff({ ...newStaff, phone: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="0501234567"
+                />
+              </div>
+
+              {/* Role */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  الدور الوظيفي *
+                </label>
+                <select
+                  value={newStaff.role}
+                  onChange={(e) => setNewStaff({ ...newStaff, role: e.target.value })}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name} - {role.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Branches */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  الفروع المخصصة
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={newStaff.branches.includes('مسقط')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNewStaff({ ...newStaff, branches: [...newStaff.branches, 'مسقط'] })
+                        } else {
+                          setNewStaff({ ...newStaff, branches: newStaff.branches.filter(b => b !== 'مسقط') })
+                        }
+                      }}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-900">فرع مسقط</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={newStaff.branches.includes('صلالة')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNewStaff({ ...newStaff, branches: [...newStaff.branches, 'صلالة'] })
+                        } else {
+                          setNewStaff({ ...newStaff, branches: newStaff.branches.filter(b => b !== 'صلالة') })
+                        }
+                      }}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-900">فرع صلالة</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={newStaff.branches.includes('صحار')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setNewStaff({ ...newStaff, branches: [...newStaff.branches, 'صحار'] })
+                        } else {
+                          setNewStaff({ ...newStaff, branches: newStaff.branches.filter(b => b !== 'صحار') })
+                        }
+                      }}
+                      className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                    />
+                    <span className="text-sm text-gray-900">فرع صحار</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowAddStaffModal(false)}
+                className="btn-secondary"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleAddStaff}
+                className="btn-primary"
+              >
+                <UserPlus className="w-4 h-4 ml-2" />
+                إضافة الموظف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

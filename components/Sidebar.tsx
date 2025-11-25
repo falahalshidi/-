@@ -27,7 +27,6 @@ const navigation = [
   { name: 'الحملات', href: '/campaigns', icon: Target },
   { name: 'الإحصائيات', href: '/analytics', icon: BarChart3 },
   { name: 'المساعد الذكي', href: '/ai-assistant', icon: Bot },
-  { name: 'مكتبة الأصول', href: '/assets', icon: Image },
   { name: 'الموظفين', href: '/staff', icon: Users },
   { name: 'التقارير', href: '/reports', icon: FileText },
 ]
