@@ -39,13 +39,6 @@ interface Staff {
   tasksCompleted: number
 }
 
-interface ActivityItem {
-  user: string
-  action: string
-  time: string
-  type: 'edit' | 'create' | 'campaign' | 'export'
-}
-
 const initialRoles: Role[] = [
   {
     id: 'owner',
@@ -147,13 +140,6 @@ const initialStaff: Staff[] = [
   },
 ]
 
-const initialActivity: ActivityItem[] = [
-  { user: 'أحمد محمد', action: 'قام بتعديل سعر "برجر كلاسيك"', time: 'منذ 5 دقائق', type: 'edit' },
-  { user: 'فاطمة عبدالله', action: 'أضافت طبق جديد "سلطة الكينوا"', time: 'منذ 15 دقيقة', type: 'create' },
-  { user: 'خالد عبدالعزيز', action: 'أطلق حملة "خصم نهاية الأسبوع"', time: 'منذ 30 دقيقة', type: 'campaign' },
-  { user: 'نورة أحمد', action: 'صدّرت تقرير التحليلات الشهري', time: 'منذ ساعة', type: 'export' },
-]
-
 const availableBranches = ['مسقط', 'صلالة', 'صحار', 'نزوى', 'جدة', 'الرياض']
 
 type Feedback = { type: 'success' | 'error'; message: string } | null
@@ -172,10 +158,8 @@ const formatRelativeTime = (dateString: string) => {
 export default function StaffPage() {
   const [staffMembers, setStaffMembers] = useState<Staff[]>(initialStaff)
   const [roles, setRoles] = useState<Role[]>(initialRoles)
-  const [activity, setActivity] = useState<ActivityItem[]>(initialActivity)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRole, setSelectedRole] = useState<string>('all')
-  const [showRoleModal, setShowRoleModal] = useState(false)
   const [showAddStaffModal, setShowAddStaffModal] = useState(false)
   const [newStaff, setNewStaff] = useState({
     name: '',
@@ -190,7 +174,6 @@ export default function StaffPage() {
   const [staffToDelete, setStaffToDelete] = useState<Staff | null>(null)
   const [staffRoleModal, setStaffRoleModal] = useState<Staff | null>(null)
   const [staffDetails, setStaffDetails] = useState<Staff | null>(null)
-  const [newRole, setNewRole] = useState({ name: '', description: '', permissions: '' })
 
   useEffect(() => {
     if (!feedback) return
@@ -208,10 +191,6 @@ export default function StaffPage() {
   }, [searchQuery, selectedRole, staffMembers])
 
   const getRoleInfo = (roleId: string) => roles.find((role) => role.id === roleId) || roles[0]
-
-  const addActivityEntry = (entry: ActivityItem) => {
-    setActivity((prev) => [entry, ...prev].slice(0, 20))
-  }
 
   const handleAddStaff = () => {
     if (!newStaff.name || !newStaff.email) {
@@ -231,12 +210,6 @@ export default function StaffPage() {
       tasksCompleted: 0,
     }
     setStaffMembers((prev) => [...prev, staffMember])
-    addActivityEntry({
-      user: staffMember.name,
-      action: 'تمت إضافته إلى الفريق',
-      time: 'قبل لحظات',
-      type: 'create',
-    })
     setShowAddStaffModal(false)
     setNewStaff({
       name: '',
@@ -252,12 +225,6 @@ export default function StaffPage() {
   const handleSaveStaff = () => {
     if (!editingStaff) return
     setStaffMembers((prev) => prev.map((member) => (member.id === editingStaff.id ? editingStaff : member)))
-    addActivityEntry({
-      user: editingStaff.name,
-      action: 'تم تحديث بياناته',
-      time: 'قبل لحظات',
-      type: 'edit',
-    })
     setEditingStaff(null)
     setFeedback({ type: 'success', message: 'تم تحديث بيانات الموظف' })
   }
@@ -265,12 +232,6 @@ export default function StaffPage() {
   const handleDeleteStaff = () => {
     if (!staffToDelete) return
     setStaffMembers((prev) => prev.filter((member) => member.id !== staffToDelete.id))
-    addActivityEntry({
-      user: staffToDelete.name,
-      action: 'تم حذف حسابه من النظام',
-      time: 'قبل لحظات',
-      type: 'export',
-    })
     setStaffToDelete(null)
     setFeedback({ type: 'success', message: 'تم حذف الموظف' })
   }
@@ -284,23 +245,6 @@ export default function StaffPage() {
     setFeedback({ type: 'success', message: 'تم تحديث صلاحيات الموظف' })
   }
 
-  const handleAddRole = () => {
-    if (!newRole.name.trim()) {
-      setFeedback({ type: 'error', message: 'اسم الدور مطلوب' })
-      return
-    }
-    const role: Role = {
-      id: `custom-${Date.now()}`,
-      name: newRole.name.trim(),
-      description: newRole.description.trim() || 'دور مخصص',
-      permissions: newRole.permissions ? newRole.permissions.split(',').map((item) => item.trim()) : [],
-      color: 'bg-indigo-100 text-indigo-700',
-    }
-    setRoles((prev) => [...prev, role])
-    setNewRole({ name: '', description: '', permissions: '' })
-    setFeedback({ type: 'success', message: 'تم إنشاء الدور الجديد' })
-  }
-
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -310,10 +254,6 @@ export default function StaffPage() {
             <p className="text-gray-600">إدارة الفريق والصلاحيات</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => setShowRoleModal(true)} className="btn-secondary">
-              <Shield className="w-4 h-4 ml-2" />
-              إدارة الأدوار
-            </button>
             <button onClick={() => setShowAddStaffModal(true)} className="btn-primary">
               <UserPlus className="w-4 h-4 ml-2" />
               إضافة موظف
@@ -381,26 +321,6 @@ export default function StaffPage() {
                 <CheckCircle className="w-6 h-6 text-purple-600" />
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">الأدوار والصلاحيات</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {roles.map((role) => (
-              <div key={role.id} className="p-4 border-2 border-gray-200 rounded-lg hover:border-primary-500 transition-all">
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${role.color}`}>
-                    {role.name}
-                  </span>
-                  <Shield className="w-5 h-5 text-gray-400" />
-                </div>
-                <p className="text-xs text-gray-600 mb-3">{role.description}</p>
-                <p className="text-xs text-gray-500">
-                  {staffMembers.filter((member) => member.role === role.id).length} موظف
-                </p>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -555,82 +475,6 @@ export default function StaffPage() {
                 })}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">سجل النشاط</h3>
-              <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
-                عرض الكل ←
-              </button>
-            </div>
-            <div className="space-y-3">
-              {activity.map((item, index) => (
-                <div key={`${item.user}-${index}`} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      item.type === 'edit'
-                        ? 'bg-blue-100'
-                        : item.type === 'create'
-                        ? 'bg-green-100'
-                        : item.type === 'campaign'
-                        ? 'bg-purple-100'
-                        : 'bg-gray-100'
-                    }`}
-                  >
-                    {item.type === 'edit' && <Edit className="w-4 h-4 text-blue-600" />}
-                    {item.type === 'create' && <UserPlus className="w-4 h-4 text-green-600" />}
-                    {item.type === 'campaign' && <Settings className="w-4 h-4 text-purple-600" />}
-                    {item.type === 'export' && <FileText className="w-4 h-4 text-gray-600" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900">
-                      <strong>{item.user}</strong> {item.action}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">{item.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="card">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">إدارة الصلاحيات</h3>
-            <div className="space-y-4">
-              <div className="p-4 bg-blue-50 border-r-4 border-blue-500 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Key className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-blue-900 mb-1">صلاحيات دقيقة</h4>
-                    <p className="text-sm text-blue-700">تحكم في كل تفاصيل الصلاحيات لكل دور على حدة</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 bg-green-50 border-r-4 border-green-500 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <FileText className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-green-900 mb-1">سجل تدقيق كامل</h4>
-                    <p className="text-sm text-green-700">تتبع جميع التغييرات والإجراءات التي يقوم بها الموظفون</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 bg-purple-50 border-r-4 border-purple-500 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Settings className="w-5 h-5 text-purple-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-purple-900 mb-1">أدوار مخصصة</h4>
-                    <p className="text-sm text-purple-700">أنشئ أدوار مخصصة بصلاحيات تناسب احتياجات فريقك</p>
-                  </div>
-                </div>
-              </div>
-              <button className="w-full btn-primary" onClick={() => setShowRoleModal(true)}>
-                <Shield className="w-4 h-4 ml-2" />
-                إنشاء دور جديد
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -928,72 +772,6 @@ export default function StaffPage() {
               </button>
               <button onClick={handleDeleteStaff} className="btn-primary bg-red-500 hover:bg-red-600">
                 حذف
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Role Management Modal */}
-      {showRoleModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">إدارة الأدوار</h2>
-                <p className="text-sm text-gray-500">أنشئ أدواراً جديدة وحدد صلاحياتها</p>
-              </div>
-            </div>
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {roles.map((role) => (
-                  <div key={role.id} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${role.color}`}>{role.name}</span>
-                      <span className="text-xs text-gray-400">{role.permissions.length} إذن</span>
-                    </div>
-                    <p className="text-sm text-gray-600">{role.description}</p>
-                    <p className="text-xs text-gray-500">
-                      الصلاحيات: {role.permissions.length ? role.permissions.join(', ') : 'حسب الطلب'}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="border rounded-lg p-4 space-y-3 bg-gray-50">
-                <h3 className="font-semibold text-gray-900">إضافة دور جديد</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="اسم الدور"
-                    value={newRole.name}
-                    onChange={(event) => setNewRole({ ...newRole, name: event.target.value })}
-                    className="input-field"
-                  />
-                  <input
-                    type="text"
-                    placeholder="وصف مختصر"
-                    value={newRole.description}
-                    onChange={(event) => setNewRole({ ...newRole, description: event.target.value })}
-                    className="input-field"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="الصلاحيات (افصل بينها بفاصلة)"
-                  value={newRole.permissions}
-                  onChange={(event) => setNewRole({ ...newRole, permissions: event.target.value })}
-                  className="input-field"
-                />
-                <div className="flex justify-end">
-                  <button onClick={handleAddRole} className="btn-primary">
-                    إضافة الدور
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
-              <button onClick={() => setShowRoleModal(false)} className="btn-primary">
-                تم
               </button>
             </div>
           </div>
