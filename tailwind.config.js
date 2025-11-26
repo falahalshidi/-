@@ -22,7 +22,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        arabic: ['Cairo', 'system-ui', 'sans-serif'],
+        arabic: ['Cairo', 'Tajawal', 'system-ui', 'sans-serif'],
+        heading: ['Almarai', 'Tajawal', 'Cairo', 'system-ui', 'sans-serif'],
       },
     },
   },

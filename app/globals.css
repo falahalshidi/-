@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Almarai:wght@300;400;700;800&family=Tajawal:wght@300;400;500;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,12 +18,17 @@ html {
 }
 
 body {
-  font-family: 'Cairo', system-ui, sans-serif;
+  font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
   background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 50%, #fef3c7 100%);
   background-attachment: fixed;
   color: #1f2937;
   /* تسريع الانتقالات */
   transition: none;
+}
+
+/* خطوط العناوين */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Almarai', 'Tajawal', 'Cairo', system-ui, sans-serif;
 }
 
 /* تسريع الرسم */

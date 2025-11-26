@@ -72,15 +72,15 @@ export default function LandingPage() {
               منصة عمانية 100% لإدارة المطاعم
             </div>
             
-            <h2 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900">
+            <h2 className="text-5xl lg:text-6xl font-black leading-relaxed text-gray-900 font-heading">
               كل ما يحتاجه مطعمك في
               <br />
-              <span className="bg-gradient-to-r from-primary-600 to-green-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-600 to-green-500 bg-clip-text text-transparent block mt-2">
                 لوحة واحدة جميلة وسهلة
               </span>
             </h2>
             
-            <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-2xl text-gray-700 leading-relaxed max-w-3xl mx-auto font-medium font-arabic">
               صممنا التجربة لتكون بسيطة، سريعة، وتمكّنك من تشغيل المنيو، الفروع، الحملات والموظفين بدون الحاجة لأي أنظمة متفرقة.
             </p>
             
@@ -114,10 +114,10 @@ export default function LandingPage() {
         <section className="relative">
           <div className="text-center mb-12">
             <p className="text-sm uppercase tracking-[0.3em] text-primary-600 font-semibold mb-3">المزايا الأساسية</p>
-            <h3 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
+            <h3 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4 font-heading">
               تحكم كامل في كل ما يتعلق بالمطعم
             </h3>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-arabic">
               جميع الأدوات التي تحتاجها لإدارة مطعمك بكفاءة عالية
             </p>
           </div>
@@ -138,11 +138,11 @@ export default function LandingPage() {
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   
-                  <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors">
+                  <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-700 transition-colors font-heading">
                     {feature.title}
                   </h4>
                   
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed font-arabic">
                     {feature.description}
                   </p>
                 </div>
