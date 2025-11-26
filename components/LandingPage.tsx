@@ -1,28 +1,28 @@
 'use client'
 
-import { CheckCircle2, ShieldCheck, TrendingUp, Bot, ArrowRight, Sparkles } from 'lucide-react'
+import { UtensilsCrossed, Store, Megaphone, BarChart3, ArrowRight, Sparkles } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
 const features = [
   {
     title: 'منيو تفاعلي',
     description: 'تحكم كامل بالأصناف والأسعار وربطها مع الفروع في ثوانٍ.',
-    icon: Sparkles,
+    icon: UtensilsCrossed,
   },
   {
     title: 'تتبّع الفروع',
     description: 'راقب الأداء اللحظي لكل فرع مع تنبيهات ذكية عند حدوث أي خلل.',
-    icon: ShieldCheck,
+    icon: Store,
   },
   {
-    title: 'ذكاء اصطناعي للمحتوى',
-    description: 'اقتراحات جاهزة للحملات التسويقية ورسائل العملاء.',
-    icon: Bot,
+    title: 'حملات تسويقية',
+    description: 'أنشئ حملات وعروض احترافية وشاركها عبر جميع قنوات التواصل.',
+    icon: Megaphone,
   },
   {
-    title: 'تقارير فورية',
-    description: 'لوحات مفصلة للزيارات، الطلبات، وقنوات التسويق في مكان واحد.',
-    icon: TrendingUp,
+    title: 'تقارير مفصلة',
+    description: 'لوحات تحليلية شاملة للمبيعات، الطلبات، وأداء كل فرع على حدة.',
+    icon: BarChart3,
   },
 ]
 
