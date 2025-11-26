@@ -21,7 +21,7 @@ import {
   Brain,
   Target
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 
 interface AIInsight {
   id: number
@@ -98,9 +98,16 @@ const reviewAnalysis = {
   ]
 }
 
+type AITab = 'insights' | 'content' | 'reviews' | 'chat'
+
 export default function AIAssistantPage() {
   const [chatMessage, setChatMessage] = useState('')
-  const [activeTab, setActiveTab] = useState<'insights' | 'content' | 'reviews' | 'chat'>('insights')
+  const [activeTab, setActiveTab] = useState<AITab>('insights')
+  const [isPending, startTransition] = useTransition()
+
+  const handleTabChange = (tab: AITab) => {
+    startTransition(() => setActiveTab(tab))
+  }
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
@@ -183,7 +190,7 @@ export default function AIAssistantPage() {
         {/* Tabs */}
         <div className="flex gap-2 border-b border-gray-200">
           <button
-            onClick={() => setActiveTab('insights')}
+            onClick={() => handleTabChange('insights')}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'insights'
                 ? 'border-primary-500 text-primary-600'
@@ -194,7 +201,7 @@ export default function AIAssistantPage() {
             الرؤى والتوصيات
           </button>
           <button
-            onClick={() => setActiveTab('content')}
+            onClick={() => handleTabChange('content')}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'content'
                 ? 'border-primary-500 text-primary-600'
@@ -205,7 +212,7 @@ export default function AIAssistantPage() {
             توليد المحتوى
           </button>
           <button
-            onClick={() => setActiveTab('reviews')}
+            onClick={() => handleTabChange('reviews')}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'reviews'
                 ? 'border-primary-500 text-primary-600'
@@ -216,7 +223,7 @@ export default function AIAssistantPage() {
             تحليل المراجعات
           </button>
           <button
-            onClick={() => setActiveTab('chat')}
+            onClick={() => handleTabChange('chat')}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'chat'
                 ? 'border-primary-500 text-primary-600'
@@ -227,6 +234,10 @@ export default function AIAssistantPage() {
             محادثة AI
           </button>
         </div>
+
+        {isPending && (
+          <div className="h-1 w-32 bg-primary-500 rounded-full animate-pulse mt-1" />
+        )}
 
         {/* Tab Content */}
         {activeTab === 'insights' && (
@@ -503,4 +514,3 @@ export default function AIAssistantPage() {
     </DashboardLayout>
   )
 }
-
