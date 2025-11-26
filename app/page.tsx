@@ -14,6 +14,8 @@ import {
   AlertCircle
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import LandingPage from '@/components/LandingPage'
+import { useAuth } from '@/contexts/AuthContext'
 
 // Import Recharts dynamically to avoid SSR issues
 const Chart = dynamic(() => import('@/components/Chart'), { 
@@ -36,6 +38,12 @@ const alerts = [
 ]
 
 export default function HomePage() {
+  const { user } = useAuth()
+
+  if (!user) {
+    return <LandingPage />
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -203,4 +211,3 @@ export default function HomePage() {
     </DashboardLayout>
   )
 }
-

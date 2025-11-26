@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { memo } from 'react'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
   Store,
@@ -34,6 +35,7 @@ const navigation = [
 function Sidebar() {
   const pathname = usePathname()
   const { isOpen, toggleSidebar, isMobile } = useSidebar()
+  const { user, logout } = useAuth()
 
   return (
     <>
@@ -107,15 +109,25 @@ function Sidebar() {
 
       {/* User Profile */}
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
           <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
-            <span className="text-primary-600 font-semibold">م</span>
+            <span className="text-primary-600 font-semibold">
+              {user?.name?.charAt(0) ?? 'م'}
+            </span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-gray-900">مدير النظام</p>
-            <p className="text-xs text-gray-500">admin@restaurant.com</p>
+            <p className="text-sm font-semibold text-gray-900">{user?.name ?? 'مستخدم'}</p>
+            <p className="text-xs text-gray-500">{user?.email ?? 'admin@restaurant.com'}</p>
           </div>
-          <Settings className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center gap-2">
+            <Settings className="w-4 h-4 text-gray-400" />
+            <button
+              className="text-xs text-primary-600 hover:text-primary-700 font-semibold"
+              onClick={logout}
+            >
+              خروج
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -124,4 +136,3 @@ function Sidebar() {
 }
 
 export default memo(Sidebar)
-
